@@ -7,60 +7,62 @@
     <title>TheBackstabber2 - Video Portal</title>
     <style>
         :root { --red: #ff0000; --bg: #0f0f0f; --card: #1a1a1a; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        header { background: #000; padding: 15px; text-align: center; border-bottom: 3px solid var(--red); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        header { background: #000; padding: 15px; text-align: center; border-bottom: 3px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .container { max-width: 1100px; margin: auto; padding: 20px; }
 
-        /* Flexible Player Container */
+        /* Main Player Section */
         .player-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
         
-        /* Default Horizontal Layout */
         .video-box { 
             width: 100%; max-width: 850px; aspect-ratio: 16/9; 
             background: #000; border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7); transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); transition: all 0.3s ease;
         }
 
-        /* Shorts (Vertical) Layout */
+        /* Auto-resize for Shorts */
         .video-box.is-short { max-width: 380px; aspect-ratio: 9/16; }
 
         iframe { width: 100%; height: 100%; border: none; }
 
-        h2#video-title { margin: 20px 0 10px 0; font-size: 1.3rem; text-align: center; }
+        h2#video-title { margin: 20px 0 10px 0; font-size: 1.4rem; text-align: center; color: #fff; }
 
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .controls { display: flex; gap: 12px; margin-bottom: 20px; justify-content: center; }
+        
         button { 
-            padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; 
+            padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; 
             background: var(--card); color: white; font-weight: bold; transition: 0.2s;
             border: 1px solid #333;
         }
-        button:hover { background: #333; }
-        button.active { background: var(--red); border-color: var(--red); }
-        button:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Grid */
-        h3 { border-left: 4px solid var(--red); padding-left: 15px; margin: 40px 0 20px 0; }
+        button:hover:not(:disabled) { background: #333; border-color: var(--red); }
+        button:disabled { opacity: 0.2; cursor: not-allowed; }
+        
+        /* Recommended Grid */
+        h3 { border-left: 4px solid var(--red); padding-left: 15px; margin: 50px 0 20px 0; font-size: 1.2rem; }
         .video-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
             gap: 20px; 
         }
         .video-card { 
-            background: var(--card); border-radius: 8px; overflow: hidden; 
-            cursor: pointer; transition: 0.3s; border: 1px solid transparent; position: relative;
+            background: var(--card); border-radius: 10px; overflow: hidden; 
+            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
         }
         .video-card:hover { transform: translateY(-5px); border-color: var(--red); }
         .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
-        .video-card p { padding: 10px; font-size: 0.85rem; margin: 0; line-height: 1.4; height: 2.8em; overflow: hidden; }
-        
-        .badge { 
-            position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.8); 
-            color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; 
+        .video-card-info { padding: 12px; }
+        .video-card-info p { font-size: 0.85rem; margin: 0; line-height: 1.4; height: 2.8em; overflow: hidden; }
+
+        @media (max-width: 600px) {
+            h2#video-title { font-size: 1.1rem; }
+            .video-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
         }
     </style>
 </head>
 <body>
 
-<header><h1>TheBackstabber2</h1></header>
+<header>
+    <h1>TheBackstabber2</h1>
+</header>
 
 <div class="container">
     <div class="player-section">
@@ -68,30 +70,27 @@
             <iframe id="main-player" src="" allowfullscreen allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
         
-        <h2 id="video-title">Loading your content...</h2>
+        <h2 id="video-title">Loading transmission...</h2>
 
         <div class="controls">
             <button id="btn-prev" onclick="changeVideo(-1)">← Previous</button>
-            <button id="btn-layout" onclick="toggleLayout()">Toggle Vertical/Wide</button>
             <button id="btn-next" onclick="changeVideo(1)">Next →</button>
         </div>
     </div>
 
-    <h3>All Content (Videos & Shorts)</h3>
+    <h3>Recommended & Recent</h3>
     <div class="video-grid" id="grid"></div>
 </div>
 
 <script>
     const API_KEY = 'AIzaSyDxoxnwap0uSkNMZ54WontqYpVxAyGq0x0';
     const CHANNEL_ID = 'UCU7O6k72OIk7EcbR4M_iSJw';
-    
-    // Using 'UU' gets EVERY upload (Videos + Shorts)
     const UPLOADS_ID = CHANNEL_ID.replace('UC', 'UU');
     
     let videos = [];
     let currentIdx = 0;
 
-    async function loadContent() {
+    async function init() {
         try {
             const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${UPLOADS_ID}&key=${API_KEY}`;
             const res = await fetch(url);
@@ -99,40 +98,48 @@
             videos = data.items;
 
             if (videos.length > 0) {
-                renderVideo(0);
+                // Check if URL has a specific video ID: ?v=ID
+                const urlParams = new URLSearchParams(window.location.search);
+                const vidIdFromUrl = urlParams.get('v');
+                
+                let startIdx = 0;
+                if (vidIdFromUrl) {
+                    const foundIdx = videos.findIndex(v => v.snippet.resourceId.videoId === vidIdFromUrl);
+                    if (foundIdx !== -1) startIdx = foundIdx;
+                }
+
+                renderVideo(startIdx, false); // false = don't push state on initial load
                 renderGrid();
             }
         } catch (err) {
-            document.getElementById('video-title').innerText = "Failed to load channel.";
+            document.getElementById('video-title').innerText = "Error loading videos.";
         }
     }
 
-    function renderVideo(index) {
+    function renderVideo(index, updateHistory = true) {
         currentIdx = index;
         const v = videos[index].snippet;
         const videoId = v.resourceId.videoId;
         const playerBox = document.getElementById('video-box');
 
-        // Update Iframe
+        // Update UI
         const origin = window.location.origin;
         document.getElementById('main-player').src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&origin=${origin}`;
         document.getElementById('video-title').innerText = v.title;
 
-        // Auto-Detect if it's a Short
-        // (YouTube doesn't tell us directly, so we look for #shorts or video title hints)
+        // Auto-detect Shorts for layout
         const isShort = v.title.toLowerCase().includes('#shorts') || v.description.toLowerCase().includes('#shorts');
-        
-        if (isShort) {
-            playerBox.classList.add('is-short');
-            document.getElementById('btn-layout').classList.add('active');
-        } else {
-            playerBox.classList.remove('is-short');
-            document.getElementById('btn-layout').classList.remove('active');
-        }
+        isShort ? playerBox.classList.add('is-short') : playerBox.classList.remove('is-short');
 
-        // Disable buttons at ends
+        // Nav Buttons state
         document.getElementById('btn-prev').disabled = (index === 0);
         document.getElementById('btn-next').disabled = (index === videos.length - 1);
+
+        // UPDATE URL PARAMETER (The "Shareable Link" part)
+        if (updateHistory) {
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + videoId;
+            window.history.pushState({path: newUrl}, '', newUrl);
+        }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -142,30 +149,34 @@
         if (newIdx >= 0 && newIdx < videos.length) renderVideo(newIdx);
     }
 
-    function toggleLayout() {
-        const box = document.getElementById('video-box');
-        box.classList.toggle('is-short');
-        document.getElementById('btn-layout').classList.toggle('active');
-    }
+    // Handle browser "Back" button
+    window.onpopstate = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const vidId = urlParams.get('v');
+        if (vidId) {
+            const idx = videos.findIndex(v => v.snippet.resourceId.videoId === vidId);
+            if (idx !== -1) renderVideo(idx, false);
+        }
+    };
 
     function renderGrid() {
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         videos.forEach((v, i) => {
-            const isShort = v.snippet.title.toLowerCase().includes('#shorts');
             const card = document.createElement('div');
             card.className = 'video-card';
             card.onclick = () => renderVideo(i);
             card.innerHTML = `
                 <img src="${v.snippet.thumbnails.medium.url}">
-                ${isShort ? '<span class="badge">SHORT</span>' : ''}
-                <p>${v.snippet.title}</p>
+                <div class="video-card-info">
+                    <p>${v.snippet.title}</p>
+                </div>
             `;
             grid.appendChild(card);
         });
     }
 
-    loadContent();
+    init();
 </script>
 
 </body>
