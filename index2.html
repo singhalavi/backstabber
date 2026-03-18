@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- GOOGLE ANALYTICS (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6D7T53H1TC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6D7T53H1TC', { send_page_view: true });
+    </script>
+
+    <!-- META PIXEL CODE -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    fbq('init', '783813791052071'); 
+    fbq('track', 'PageView'); 
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=783813791052071&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- END META PIXEL CODE -->
+
+    <!-- Standard SEO Tags -->
+    <title>TheBackstabber2 - Video Portal</title>
+    <meta name="description" id="meta-desc" content="Watch the latest gaming videos and shorts from TheBackstabber2.">
+    
+    <!-- Open Graph Tags (Social Media Sharing) -->
+    <meta property="og:title" id="og-title" content="TheBackstabber2 - Video Portal">
+    <meta property="og:description" id="og-desc" content="Watch the latest gaming videos and shorts from TheBackstabber2.">
+    <meta property="og:type" content="video.other">
+    <meta property="og:image" id="og-image" content="">
+    <meta property="og:site_name" content="TheBackstabber2">
+
+    <style>
+        :root { --red: #ff0000; --bg: #0f0f0f; --card: #1a1a1a; --text: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        header { background: #000; padding: 15px; text-align: center; border-bottom: 3px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+
+        .player-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
+        
+        .video-box { 
+            width: 100%; max-width: 850px; aspect-ratio: 16/9; 
+            background: #000; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); transition: all 0.3s ease;
+        }
+
+        .video-box.is-short { max-width: 380px; aspect-ratio: 9/16; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        h2#video-title { margin: 20px 0 10px 0; font-size: 1.4rem; text-align: center; color: #fff; }
+
+        .video-description {
+            max-width: 850px; width: 100%; background: #1a1a1a; padding: 15px; 
+            border-radius: 8px; margin-top: 15px; font-size: 0.95rem; color: #ccc;
+            white-space: pre-wrap; line-height: 1.5; border: 1px solid #333;
+        }
+
+        .controls { display: flex; gap: 12px; margin: 20px 0; justify-content: center; }
+        
+        button { 
+            padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; 
+            background: var(--card); color: white; font-weight: bold; transition: 0.2s;
+            border: 1px solid #333;
+        }
+        button:hover:not(:disabled) { background: #333; border-color: var(--red); }
+        button:disabled { opacity: 0.2; cursor: not-allowed; }
+        
+        h3 { border-left: 4px solid var(--red); padding-left: 15px; margin: 50px 0 20px 0; font-size: 1.2rem; }
+        .video-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+        .video-card { 
+            background: var(--card); border-radius: 10px; overflow: hidden; 
+            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
+        }
+        .video-card:hover { transform: translateY(-5px); border-color: var(--red); }
+        .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .video-card-info { padding: 12px; }
+        .video-card-info p { font-size: 0.85rem; margin: 0; line-height: 1.4; height: 2.8em; overflow: hidden; }
+
+        @media (max-width: 600px) {
+            h2#video-title { font-size: 1.1rem; }
+            .video-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TheBackstabber2</h1>
+</header>
+
+<div class="container">
+    <div class="player-section">
+        <div id="video-box" class="video-box">
+            <iframe id="main-player" src="" allowfullscreen allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        
+        <h2 id="video-title">Syncing transmission...</h2>
+        
+        <div id="video-desc" class="video-description">Loading data...</div>
+
+        <div class="controls">
+            <button id="btn-prev" onclick="changeVideo(-1)">← Previous</button>
+            <button id="btn-next" onclick="changeVideo(1)">Next →</button>
+        </div>
+    </div>
+
+    <h3>Transmission Logs</h3>
+    <div class="video-grid" id="grid"></div>
+</div>
+
+<script>
+    const API_KEY = 'AIzaSyDxoxnwap0uSkNMZ54WontqYpVxAyGq0x0';
+    const CHANNEL_ID = 'UCU7O6k72OIk7EcbR4M_iSJw';
+    const UPLOADS_ID = CHANNEL_ID.replace('UC', 'UU');
+    const GA_ID = 'G-6D7T53H1TC';
+    
+    let videos = [];
+    let currentIdx = 0;
+
+    async function init() {
+        try {
+            const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${UPLOADS_ID}&key=${API_KEY}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            videos = data.items;
+
+            if (videos.length > 0) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const vidIdFromUrl = urlParams.get('v');
+                
+                let startIdx = 0;
+                if (vidIdFromUrl) {
+                    const foundIdx = videos.findIndex(v => v.snippet.resourceId.videoId === vidIdFromUrl);
+                    if (foundIdx !== -1) startIdx = foundIdx;
+                }
+
+                renderVideo(startIdx, false);
+                renderGrid();
+            }
+        } catch (err) {
+            document.getElementById('video-title').innerText = "Error loading videos.";
+        }
+    }
+
+    function renderVideo(index, updateHistory = true) {
+        currentIdx = index;
+        const v = videos[index].snippet;
+        const videoId = v.resourceId.videoId;
+        const playerBox = document.getElementById('video-box');
+
+        // 1. Update On-Page Content
+        const origin = window.location.origin;
+        document.getElementById('main-player').src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&origin=${origin}`;
+        document.getElementById('video-title').innerText = v.title;
+        document.getElementById('video-desc').innerText = v.description || "No description provided.";
+
+        // 2. SEO & OG Tags Update
+        document.title = `${v.title} | TheBackstabber2`;
+        document.getElementById('meta-desc').content = v.description.substring(0, 160);
+        document.getElementById('og-title').content = v.title;
+        document.getElementById('og-desc').content = v.description.substring(0, 160);
+        if (v.thumbnails && v.thumbnails.high) document.getElementById('og-image').content = v.thumbnails.high.url;
+
+        // 3. Auto-detect Shorts
+        const isShort = v.title.toLowerCase().includes('#shorts') || v.description.toLowerCase().includes('#shorts');
+        isShort ? playerBox.classList.add('is-short') : playerBox.classList.remove('is-short');
+
+        // 4. Update Navigation
+        document.getElementById('btn-prev').disabled = (index === 0);
+        document.getElementById('btn-next').disabled = (index === videos.length - 1);
+
+        // 5. Tracking & History
+        if (updateHistory) {
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + videoId;
+            window.history.pushState({path: newUrl}, '', newUrl);
+
+            // GOOGLE ANALYTICS VIRTUAL PAGE VIEW
+            if (typeof gtag === 'function') {
+                gtag('config', GA_ID, {
+                    'page_title': v.title,
+                    'page_path': window.location.pathname + '?v=' + videoId
+                });
+            }
+
+            // META PIXEL VIRTUAL PAGE VIEW
+            if (typeof fbq === 'function') {
+                fbq('track', 'PageView'); 
+                fbq('track', 'ViewContent', { 
+                    content_name: v.title,
+                    content_ids: [videoId],
+                    content_type: 'product' 
+                });
+            }
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeVideo(step) {
+        let newIdx = currentIdx + step;
+        if (newIdx >= 0 && newIdx < videos.length) renderVideo(newIdx);
+    }
+
+    window.onpopstate = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const vidId = urlParams.get('v');
+        if (vidId) {
+            const idx = videos.findIndex(v => v.snippet.resourceId.videoId === vidId);
+            if (idx !== -1) renderVideo(idx, false);
+        }
+    };
+
+    function renderGrid() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
+        videos.forEach((v, i) => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.onclick = () => renderVideo(i);
+            card.innerHTML = `
+                <img src="${v.snippet.thumbnails.medium.url}">
+                <div class="video-card-info">
+                    <p>${v.snippet.title}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    init();
+</script>
+
+</body>
+</html>
