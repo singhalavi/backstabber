@@ -63,27 +63,14 @@
 
         h2#video-title { margin: 20px 0 10px 0; font-size: 1.4rem; text-align: center; color: #fff; }
 
-        /* SUBSCRIBE BUTTON STYLE */
         .sub-button {
-            display: inline-block;
-            background-color: var(--red);
-            color: #fff;
-            padding: 12px 35px;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 50px;
-            margin: 15px 0;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-            font-size: 1rem;
+            display: inline-block; background-color: var(--red); color: #fff;
+            padding: 12px 35px; text-decoration: none; font-weight: bold;
+            border-radius: 50px; margin: 15px 0; transition: all 0.3s ease;
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); font-size: 1rem;
         }
-        .sub-button:hover {
-            transform: scale(1.05);
-            background-color: #cc0000;
-            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
-        }
+        .sub-button:hover { transform: scale(1.05); background-color: #cc0000; box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5); }
 
         .video-description {
             max-width: 850px; width: 100%; background: #1a1a1a; padding: 15px; 
@@ -102,23 +89,14 @@
         button:disabled { opacity: 0.2; cursor: not-allowed; }
         
         h3 { border-left: 4px solid var(--red); padding-left: 15px; margin: 50px 0 20px 0; font-size: 1.2rem; }
-        .video-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 20px; 
-        }
-        .video-card { 
-            background: var(--card); border-radius: 10px; overflow: hidden; 
-            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
-        }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .video-card { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
         .video-card:hover { transform: translateY(-5px); border-color: var(--red); }
         .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         .video-card-info { padding: 12px; }
         .video-card-info p { font-size: 0.85rem; margin: 0; line-height: 1.4; height: 2.8em; overflow: hidden; }
 
-        @media (max-width: 600px) {
-            h2#video-title { font-size: 1.1rem; }
-            .sub-button { padding: 10px 20px; font-size: 0.8rem; }
-        }
+        @media (max-width: 600px) { h2#video-title { font-size: 1.1rem; } .sub-button { padding: 10px 20px; font-size: 0.8rem; } }
     </style>
 </head>
 <body>
@@ -133,9 +111,8 @@
             <iframe id="main-player" src="" allowfullscreen allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
         
-        <h2 id="video-title">Syncing transmission...</h2>
+        <h2 id="video-title">Establishing Connection...</h2>
 
-        <!-- UPDATED SUBSCRIBE BUTTON FOR VyzenZ -->
         <a href="https://www.youtube.com/@VyzenZ?sub_confirmation=1" target="_blank" class="sub-button" id="sub-btn" onclick="trackSubClick()">
             SUBSCRIBE TO VYZENZ
         </a>
@@ -162,15 +139,8 @@
     let currentIdx = 0;
 
     function trackSubClick() {
-        if (typeof gtag === 'function') {
-            gtag('event', 'generate_lead', {
-                'event_category': 'engagement',
-                'event_label': 'Subscribe Button Click'
-            });
-        }
-        if (typeof fbq === 'function') {
-            fbq('track', 'Lead', { content_name: 'YouTube Subscribe' });
-        }
+        if (typeof gtag === 'function') gtag('event', 'generate_lead', { 'event_category': 'engagement', 'event_label': 'Subscribe' });
+        if (typeof fbq === 'function') fbq('track', 'Lead', { content_name: 'Subscribe' });
     }
 
     async function init() {
@@ -185,16 +155,26 @@
                 const vidIdFromUrl = urlParams.get('v');
                 
                 let startIdx = 0;
+
                 if (vidIdFromUrl) {
                     const foundIdx = videos.findIndex(v => v.snippet.resourceId.videoId === vidIdFromUrl);
                     if (foundIdx !== -1) startIdx = foundIdx;
+                } else {
+                    // LANDING PAGE LOGIC: Find the latest regular video (skipping shorts)
+                    const latestLongVideoIdx = videos.findIndex(v => {
+                        const title = v.snippet.title.toLowerCase();
+                        const desc = v.snippet.description.toLowerCase();
+                        return !title.includes('#shorts') && !desc.includes('#shorts');
+                    });
+                    // If no long video is found at all, fallback to the very first item (0)
+                    startIdx = (latestLongVideoIdx !== -1) ? latestLongVideoIdx : 0;
                 }
 
                 renderVideo(startIdx, false);
                 renderGrid();
             }
         } catch (err) {
-            document.getElementById('video-title').innerText = "Error loading videos.";
+            document.getElementById('video-title').innerText = "Error loading VyzenZ feed.";
         }
     }
 
@@ -204,12 +184,10 @@
         const videoId = v.resourceId.videoId;
         const playerBox = document.getElementById('video-box');
 
-        const origin = window.location.origin;
-        document.getElementById('main-player').src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&origin=${origin}`;
+        document.getElementById('main-player').src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&origin=${window.location.origin}`;
         document.getElementById('video-title').innerText = v.title;
         document.getElementById('video-desc').innerText = v.description || "No description provided.";
 
-        // Update Title & Meta for VyzenZ
         document.title = `${v.title} | VyzenZ`;
         document.getElementById('meta-desc').content = v.description.substring(0, 160);
         document.getElementById('og-title').content = v.title;
@@ -226,20 +204,10 @@
             const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?v=' + videoId;
             window.history.pushState({path: newUrl}, '', newUrl);
 
-            if (typeof gtag === 'function') {
-                gtag('config', GA_ID, {
-                    'page_title': v.title,
-                    'page_path': window.location.pathname + '?v=' + videoId
-                });
-            }
-
+            if (typeof gtag === 'function') gtag('config', GA_ID, { 'page_title': v.title, 'page_path': window.location.pathname + '?v=' + videoId });
             if (typeof fbq === 'function') {
                 fbq('track', 'PageView'); 
-                fbq('track', 'ViewContent', { 
-                    content_name: v.title,
-                    content_ids: [videoId],
-                    content_type: 'product' 
-                });
+                fbq('track', 'ViewContent', { content_name: v.title, content_ids: [videoId], content_type: 'video' });
             }
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -266,12 +234,7 @@
             const card = document.createElement('div');
             card.className = 'video-card';
             card.onclick = () => renderVideo(i);
-            card.innerHTML = `
-                <img src="${v.snippet.thumbnails.medium.url}">
-                <div class="video-card-info">
-                    <p>${v.snippet.title}</p>
-                </div>
-            `;
+            card.innerHTML = `<img src="${v.snippet.thumbnails.medium.url}"><div class="video-card-info"><p>${v.snippet.title}</p></div>`;
             grid.appendChild(card);
         });
     }
